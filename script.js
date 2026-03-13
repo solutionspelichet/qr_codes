@@ -1,13 +1,14 @@
-const GAS_URL = "VOTRE_URL_SCRIPT_ICI";
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxDyfl3NhpEbFEL7zCdQgRCQrIutFqRwSnd1gGUOosaWIiIx5PdNQJbZPuSu_7mneUq/exec";
 
 document.getElementById('labelForm').onsubmit = async (e) => {
     e.preventDefault();
     const btn = document.getElementById('btnText');
     const fileInput = document.getElementById('excelFile');
     
-    if(!fileInput.files[0]) return alert("Veuillez charger un fichier Excel.");
+    if(!fileInput.files[0]) return alert("Fichier manquant !");
     
-    btn.innerText = "TRAITEMENT EN COURS...";
+    btn.innerText = "GÉNÉRATION EN COURS...";
+    btn.parentElement.classList.add('opacity-50', 'pointer-events-none');
     
     const reader = new FileReader();
     reader.onload = async (event) => {
@@ -21,10 +22,9 @@ document.getElementById('labelForm').onsubmit = async (e) => {
                 options: {
                     type: document.getElementById('type').value,
                     preset: document.getElementById('preset').value,
-                    showText: true,
+                    showText: document.getElementById('textPos').value !== "none",
                     textPos: document.getElementById('textPos').value,
                     email: document.getElementById('userEmail').value,
-                    // Valeurs personnalisées
                     custW: document.getElementById('custW').value,
                     custH: document.getElementById('custH').value,
                     custCols: document.getElementById('custCols').value,
@@ -38,12 +38,12 @@ document.getElementById('labelForm').onsubmit = async (e) => {
                 body: JSON.stringify(payload)
             });
 
-            btn.innerText = "GÉNÉRER LE PDF";
+            btn.innerText = "GÉNÉRER SUR GOOGLE DRIVE";
+            btn.parentElement.classList.remove('opacity-50', 'pointer-events-none');
             document.getElementById('result').classList.remove('hidden');
-            alert("Terminé ! Le PDF sera disponible sur Drive et par email dans quelques instants.");
         } catch (err) {
-            alert("Erreur technique : " + err.message);
-            btn.innerText = "GÉNÉRER LE PDF";
+            alert("Erreur réseau : " + err.message);
+            btn.innerText = "GÉNÉRER SUR GOOGLE DRIVE";
         }
     };
     reader.readAsArrayBuffer(fileInput.files[0]);
