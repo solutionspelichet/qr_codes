@@ -1,46 +1,47 @@
-const GAS_URL = "VOTRE_URL_ICI";
-
-const fileInput = document.getElementById('excelFile');
-const fileStatus = document.getElementById('fileStatus');
-
-fileInput.onchange = () => { if(fileInput.files[0]) fileStatus.innerText = "Fichier : " + fileInput.files[0].name; };
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxDyfl3NhpEbFEL7zCdQgRCQrIutFqRwSnd1gGUOosaWIiIx5PdNQJbZPuSu_7mneUq/exec";
 
 document.getElementById('labelForm').onsubmit = async (e) => {
     e.preventDefault();
-    const btn = document.getElementById('btnSubmit');
-    const ldr = document.getElementById('loader');
+    const btn = document.getElementById('btnText');
+    const fileInput = document.getElementById('excelFile');
     
-    btn.disabled = true; ldr.classList.remove('hidden');
-
+    if(!fileInput.files[0]) return alert("Sélectionnez un fichier");
+    
+    btn.innerText = "TRAITEMENT EN COURS...";
+    
     const reader = new FileReader();
     reader.onload = async (event) => {
+        const wb = XLSX.read(new Uint8Array(event.target.result), {type: 'array'});
+        const data = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], {raw:false});
+        const codes = data.map(r => r.Code || r.code || r.CODE).filter(c => c);
+
+        const payload = {
+            rows: codes,
+            options: {
+                type: document.getElementById('type').value,
+                preset: document.getElementById('preset').value,
+                showText: document.getElementById('showText').value === "true",
+                textPos: document.getElementById('textPos').value,
+                email: document.getElementById('userEmail').value
+            }
+        };
+
         try {
-            const wb = XLSX.read(new Uint8Array(event.target.result), { type: 'array', cellText: true });
-            const json = XLSX.utils.sheet_to_json(wb.Sheets[wb.SheetNames[0]], { raw: false });
-            const codes = json.map(r => r.Code || r.code || r.CODE).filter(c => c);
+            // L'appel fetch avec mode no-cors ne permet pas de lire la réponse
+            // Mais déclenche bien l'exécution côté Google.
+            await fetch(GAS_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(payload)
+            });
 
-            const payload = {
-                rows: codes,
-                options: {
-                    type: document.getElementById('type').value,
-                    preset: document.getElementById('preset').value,
-                    showText: document.getElementById('showText').value === "true",
-                    textPos: document.getElementById('textPos').value,
-                    email: document.getElementById('userEmail').value
-                }
-            };
-
-            // Appel GAS
-            const response = await fetch(GAS_URL, { method: 'POST', mode: 'no-cors', body: JSON.stringify(payload) });
-
-            btn.disabled = false; ldr.classList.add('hidden');
+            btn.innerText = "GÉNÉRER PDF";
             document.getElementById('result').classList.remove('hidden');
             document.getElementById('driveLink').href = "https://drive.google.com/";
-            alert("PDF envoyé sur Drive (et par email si renseigné)");
-
+            alert("Requête envoyée ! Vérifiez vos emails et votre dossier 'Etiquettes_Pelichet' dans quelques instants.");
         } catch (err) {
-            alert("Erreur : " + err.message);
-            btn.disabled = false; ldr.classList.add('hidden');
+            alert("Erreur réseau");
+            btn.innerText = "GÉNÉRER PDF";
         }
     };
     reader.readAsArrayBuffer(fileInput.files[0]);
