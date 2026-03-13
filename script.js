@@ -36,7 +36,7 @@ document.getElementById('labelForm').onsubmit = async (e) => {
             btn.innerText = "GÉNÉRER LE PDF"; btn.disabled = false;
             document.getElementById('result').classList.remove('hidden');
         } catch (err) {
-            alert("Erreur réseau : " + err.message);
+            alert("Erreur technique : " + err.message);
             btn.disabled = false;
         }
     };
