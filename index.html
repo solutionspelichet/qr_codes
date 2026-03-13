@@ -16,12 +16,17 @@
                 <div class="col-span-2">
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Modèle d'Étiquette</label>
                     <select id="preset" class="w-full p-3 bg-slate-50 border rounded-xl outline-none" onchange="toggleCustom()">
-                        <option value="HERMA_4427">HERMA 4427 (2x2 - 105x148mm)</option>
-                        <option value="HERMA_4270">HERMA 4270 (2x4 - 99x67mm)</option>
-                        <option value="HERMA_4676">HERMA 4676 (3x8)</option>
-                        <option value="AVERY_L7159">AVERY L7159 (3x8)</option>
-                        <option value="CUSTOM">-- SUR MESURE --</option>
-                    </select>
+    <optgroup label="HERMA">
+        <option value="HERMA_4427">HERMA 4427 (2x16 - 105x18.5mm)</option>
+        <option value="HERMA_4270">HERMA 4270 (2x4 - 99x67mm)</option>
+        <option value="HERMA_4676">HERMA 4676 (3x8 - 70x29mm)</option>
+    </optgroup>
+    <optgroup label="AVERY">
+        <option value="AVERY_L7159">AVERY L7159 (3x8)</option>
+        <option value="AVERY_L7160">AVERY L7160 (3x7)</option>
+    </optgroup>
+    <option value="CUSTOM">-- SUR MESURE --</option>
+</select>
                 </div>
 
                 <div id="customFields" class="col-span-2 hidden grid grid-cols-4 gap-2 p-3 bg-blue-50 rounded-xl">
@@ -60,3 +65,4 @@
     <script>function toggleCustom(){document.getElementById('customFields').classList.toggle('hidden', document.getElementById('preset').value !== "CUSTOM");}</script>
 </body>
 </html>
+
