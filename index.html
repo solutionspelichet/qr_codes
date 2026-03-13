@@ -2,61 +2,90 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Pelichet | Générateur</title>
+    <title>Pelichet | Expert Labels</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
-    <div class="max-w-xl w-full bg-white shadow-2xl rounded-3xl overflow-hidden">
-        <div class="bg-[#002e5d] p-6 text-white text-center font-bold text-2xl italic">PELICHET</div>
+<body class="bg-slate-100 min-h-screen p-4 flex items-center justify-center">
+
+    <div class="max-w-2xl w-full bg-white shadow-2xl rounded-3xl overflow-hidden border border-slate-200">
+        <div class="bg-[#002e5d] p-6 text-white text-center font-bold text-2xl italic">PELICHET LOGISTICS</div>
+        
         <form id="labelForm" class="p-8 space-y-4">
-            <input type="file" id="excelFile" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
-            
+            <input type="file" id="excelFile" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer">
+
             <div class="grid grid-cols-2 gap-4">
                 <div class="col-span-2">
-                    <label class="text-xs font-bold text-slate-400 uppercase">Format étiquette</label>
-                    <select id="preset" class="w-full p-2 border rounded-lg">
-                        <option value="AVERY_L7159">Avery L7159 (3x8)</option>
-                        <option value="AVERY_L7160">Avery L7160 (3x7)</option>
-                        <option value="HERMA_4270">Herma 4270 (2x4)</option>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Référence Étiquette</label>
+                    <select id="preset" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500" onchange="toggleCustom()">
+                        <optgroup label="Marques Populaires">
+                            <option value="AVERY_L7159">Avery L7159 / Agipa 119014 (3x8)</option>
+                            <option value="AVERY_L7160">Avery L7160 (3x7)</option>
+                            <option value="HERMA_4676">Herma 4676 (3x8)</option>
+                            <option value="HERMA_4270">Herma 4270 (2x4)</option>
+                            <option value="AGIPA_119011">Agipa 119011 (2x8)</option>
+                        </optgroup>
+                        <option value="CUSTOM">-- FORMAT PERSONNALISÉ (Toutes marques) --</option>
                     </select>
                 </div>
+
+                <div id="customFields" class="col-span-2 hidden grid grid-cols-3 gap-2 p-4 bg-yellow-50 rounded-xl border border-yellow-100">
+                    <div>
+                        <label class="text-[9px] font-bold uppercase">Largeur mm</label>
+                        <input type="number" id="custW" value="63.5" class="w-full p-2 border rounded">
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold uppercase">Hauteur mm</label>
+                        <input type="number" id="custH" value="33.9" class="w-full p-2 border rounded">
+                    </div>
+                    <div>
+                        <label class="text-[9px] font-bold uppercase">Colonnes</label>
+                        <input type="number" id="custCols" value="3" class="w-full p-2 border rounded">
+                    </div>
+                    <div class="col-span-3">
+                        <label class="text-[9px] font-bold uppercase">Lignes par page</label>
+                        <input type="number" id="custRows" value="8" class="w-full p-2 border rounded">
+                    </div>
+                </div>
+
                 <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase">Type</label>
-                    <select id="type" class="w-full p-2 border rounded-lg">
-                        <option value="Code128">Code-barres</option>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Type Code</label>
+                    <select id="type" class="w-full p-3 bg-slate-50 border rounded-xl">
+                        <option value="Code128">Barcode 128</option>
                         <option value="QR">QR Code</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-xs font-bold text-slate-400 uppercase">Texte</label>
-                    <select id="showText" class="w-full p-2 border rounded-lg">
-                        <option value="true">Oui</option>
-                        <option value="false">Non</option>
-                    </select>
-                </div>
-                <div class="col-span-2">
-                    <label class="text-xs font-bold text-slate-400 uppercase">Position texte</label>
-                    <select id="textPos" class="w-full p-2 border rounded-lg">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Position Texte</label>
+                    <select id="textPos" class="w-full p-3 bg-slate-50 border rounded-xl">
                         <option value="dessous">Dessous</option>
                         <option value="dessus">Dessus</option>
                     </select>
                 </div>
+                
                 <div class="col-span-2">
-                    <label class="text-xs font-bold text-blue-600 uppercase">Email de réception</label>
-                    <input type="email" id="userEmail" class="w-full p-2 border border-blue-200 rounded-lg" placeholder="exemple@pelichet.ch">
+                    <label class="text-[10px] font-bold text-blue-600 uppercase">Email de réception</label>
+                    <input type="email" id="userEmail" class="w-full p-3 border border-blue-200 rounded-xl" placeholder="votre@email.com">
                 </div>
             </div>
 
-            <button type="submit" id="btnSubmit" class="w-full bg-[#002e5d] text-white font-bold py-3 rounded-xl hover:bg-blue-900 transition">
-                <span id="btnText">GÉNÉRER PDF</span>
+            <button type="submit" id="btnSubmit" class="w-full bg-[#002e5d] text-white font-bold py-4 rounded-2xl shadow-xl hover:bg-blue-900 transition-all flex justify-center items-center">
+                <span id="btnText">GÉNÉRER LE PDF</span>
             </button>
         </form>
-        <div id="result" class="hidden p-6 bg-green-50 text-center border-t">
-            <p class="text-green-700 font-bold">PDF envoyé !</p>
-            <a id="driveLink" href="#" target="_blank" class="text-blue-600 underline text-sm">Voir sur Drive</a>
+
+        <div id="result" class="hidden p-6 bg-green-50 text-center border-t border-green-100">
+            <p class="text-green-800 font-bold">Fichier envoyé avec succès !</p>
+            <p class="text-xs text-slate-500">Vérifiez vos emails et votre dossier Drive.</p>
         </div>
     </div>
+
     <script src="script.js"></script>
+    <script>
+        function toggleCustom() {
+            const isCustom = document.getElementById('preset').value === "CUSTOM";
+            document.getElementById('customFields').classList.toggle('hidden', !isCustom);
+        }
+    </script>
 </body>
 </html>
