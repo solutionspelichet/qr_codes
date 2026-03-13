@@ -2,7 +2,7 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Pelichet | Logistics Labels</title>
+    <title>Pelichet | Logistics</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
@@ -10,57 +10,53 @@
     <div class="max-w-xl w-full bg-white shadow-2xl rounded-3xl overflow-hidden border border-slate-200">
         <div class="bg-[#002e5d] p-8 text-white text-center font-black italic text-3xl tracking-tighter uppercase">PELICHET</div>
         <form id="labelForm" class="p-8 space-y-5">
-            <input type="file" id="excelFile" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer">
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-400 uppercase">Fichier Excel (.xlsx)</label>
+                <input type="file" id="excelFile" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer">
+            </div>
             
             <div class="grid grid-cols-2 gap-4">
                 <div class="col-span-2">
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Référence Étiquette</label>
-                    <select id="preset" class="w-full p-3 bg-slate-50 border rounded-xl outline-none focus:ring-2 focus:ring-blue-500" onchange="toggleCustom()">
-                        <optgroup label="HERMA">
-                            <option value="HERMA_4270">4270 (2x4 - 99x67mm)</option>
-                            <option value="HERMA_4427">4427 (2x2 - 105x148mm)</option>
-                            <option value="HERMA_4676">4676 (3x8)</option>
-                            <option value="HERMA_4457">4457 (4x10)</option>
-                        </optgroup>
-                        <optgroup label="AVERY">
-                            <option value="AVERY_L7159">L7159 (3x8)</option>
-                            <option value="AVERY_L7163">L7163 (2x7)</option>
-                        </optgroup>
-                        <option value="CUSTOM">-- SUR MESURE (Saisie manuelle) --</option>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Modèle</label>
+                    <select id="preset" class="w-full p-3 bg-slate-50 border rounded-xl outline-none" onchange="toggleCustom()">
+                        <option value="HERMA_4427">HERMA 4427 (2x2 - 105x148mm)</option>
+                        <option value="HERMA_4270">HERMA 4270 (2x4 - 99x67mm)</option>
+                        <option value="AVERY_L7159">AVERY L7159 (3x8 - 63x33mm)</option>
+                        <option value="CUSTOM">-- SUR MESURE --</option>
                     </select>
                 </div>
 
                 <div id="customFields" class="col-span-2 hidden grid grid-cols-4 gap-2 p-3 bg-blue-50 rounded-xl">
-                    <input type="number" id="custW" placeholder="Larg mm" class="p-2 text-xs border rounded">
-                    <input type="number" id="custH" placeholder="Haut mm" class="p-2 text-xs border rounded">
+                    <input type="number" id="custW" placeholder="L mm" class="p-2 text-xs border rounded">
+                    <input type="number" id="custH" placeholder="H mm" class="p-2 text-xs border rounded">
                     <input type="number" id="custCols" placeholder="Col" class="p-2 text-xs border rounded">
                     <input type="number" id="custRows" placeholder="Lig" class="p-2 text-xs border rounded">
                 </div>
 
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Type Code</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Type</label>
                     <select id="type" class="w-full p-3 bg-slate-50 border rounded-xl">
                         <option value="Code128">Barcode 128</option>
                         <option value="QR">QR Code</option>
                     </select>
                 </div>
                 <div>
-                    <label class="text-[10px] font-bold text-slate-400 uppercase ml-1">Texte</label>
+                    <label class="text-[10px] font-bold text-slate-400 uppercase">Texte</label>
                     <select id="textPos" class="w-full p-3 bg-slate-50 border rounded-xl">
                         <option value="dessous">Dessous</option>
                         <option value="dessus">Dessus</option>
-                        <option value="none">Aucun</option>
+                        <option value="none">Masqué</option>
                     </select>
                 </div>
                 <div class="col-span-2">
-                    <label class="text-[10px] font-bold text-blue-600 uppercase ml-1 font-black underline">Email de réception</label>
+                    <label class="text-[10px] font-bold text-blue-600 uppercase">Email (Optionnel)</label>
                     <input type="email" id="userEmail" class="w-full p-3 border border-blue-200 rounded-xl outline-none" placeholder="nom@pelichet.ch">
                 </div>
             </div>
 
-            <button type="submit" id="btnSubmit" class="w-full bg-[#002e5d] text-white font-bold py-4 rounded-xl hover:bg-blue-900 shadow-lg transform transition active:scale-95">GÉNÉRER LE PDF</button>
+            <button type="submit" id="btnSubmit" class="w-full bg-[#002e5d] text-white font-bold py-4 rounded-xl hover:bg-blue-900 shadow-lg transition-transform active:scale-95">GÉNÉRER LE PDF</button>
         </form>
-        <div id="result" class="hidden p-6 bg-green-50 text-center font-bold text-green-800 animate-pulse border-t">REQUÊTE ENVOYÉE ! VÉRIFIEZ VOS EMAILS.</div>
+        <div id="result" class="hidden p-6 bg-green-50 text-center font-bold text-green-800 border-t border-green-100">REQUÊTE ENVOYÉE ! VÉRIFIEZ DRIVE & EMAIL.</div>
     </div>
     <script src="script.js"></script>
     <script>function toggleCustom(){document.getElementById('customFields').classList.toggle('hidden', document.getElementById('preset').value !== "CUSTOM");}</script>
