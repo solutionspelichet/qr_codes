@@ -1,36 +1,90 @@
-<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-    
-    <div class="md:col-span-2">
-        <label class="block text-sm font-semibold text-slate-700 mb-1">Format d'étiquette</label>
-        <select id="preset" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white">
-            <optgroup label="Avery">
-                <option value="AVERY_L7159">Avery L7159 (3x8 - 63.5x33.9mm)</option>
-                <option value="AVERY_L7160">Avery L7160 (3x7 - 63.5x38.1mm)</option>
-            </optgroup>
-            <optgroup label="Herma">
-                <option value="HERMA_4676">Herma 4676 (3x8 - 70x29.7mm)</option>
-                <option value="HERMA_4457">Herma 4457 (4x10 - 48.3x25.4mm)</option>
-                <option value="HERMA_4270">Herma 4270 (2x4 - 99.1x67.7mm)</option>
-            </optgroup>
-            <optgroup label="Autre">
-                <option value="SINGLE_ROLL">Imprimante Thermique (50x30mm)</option>
-            </optgroup>
-        </select>
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pelichet | Générateur d'Étiquettes</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="bg-slate-100 min-h-screen p-4 flex items-center justify-center font-sans">
+
+    <div class="max-w-2xl w-full bg-white shadow-2xl rounded-3xl overflow-hidden border border-slate-200">
+        <div class="bg-[#002e5d] p-8 text-white text-center">
+            <h1 class="text-3xl font-black tracking-tighter uppercase italic">Pelichet</h1>
+            <p class="text-blue-200 text-xs tracking-[0.2em] mt-1 font-bold">LOGISTICS LABEL GENERATOR</p>
+        </div>
+
+        <div class="p-8 space-y-8">
+            <form id="labelForm" class="space-y-6">
+                
+                <div class="relative group">
+                    <input type="file" id="excelFile" accept=".xlsx" class="hidden" required>
+                    <label for="excelFile" class="flex flex-col items-center justify-center border-2 border-dashed border-slate-300 rounded-2xl p-6 cursor-pointer bg-slate-50 hover:bg-white hover:border-blue-500 transition-all">
+                        <svg class="h-10 w-10 text-slate-400 group-hover:text-blue-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+                        </svg>
+                        <span id="fileStatus" class="text-slate-500 font-medium">Charger le fichier Excel (.xlsx)</span>
+                    </label>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Modèle d'Étiquette</label>
+                        <select id="preset" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl outline-none focus:ring-2 focus:ring-blue-500">
+                            <optgroup label="Avery (Bureautique)">
+                                <option value="AVERY_L7159">Avery L7159 (3x8 - 63.5x33.9mm)</option>
+                                <option value="AVERY_L7160">Avery L7160 (3x7 - 63.5x38.1mm)</option>
+                                <option value="AVERY_L7163">Avery L7163 (2x7 - 99.1x38.1mm)</option>
+                            </optgroup>
+                            <optgroup label="Herma (Industriel)">
+                                <option value="HERMA_4676">Herma 4676 (3x8 - 70x29.7mm)</option>
+                                <option value="HERMA_4457">Herma 4457 (4x10 - 48.3x25.4mm)</option>
+                                <option value="HERMA_4270">Herma 4270 (2x4 - 99.1x67.7mm)</option>
+                                <option value="HERMA_4428">Herma 4428 (2x6 - 105x48mm)</option>
+                            </optgroup>
+                            <option value="SINGLE_ROLL">Imprimante Thermique (50x30mm)</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Type</label>
+                        <select id="type" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                            <option value="QR">QR Code</option>
+                            <option value="Code128">Barcode 128</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Afficher texte</label>
+                        <select id="showText" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                            <option value="true">OUI</option>
+                            <option value="false">NON</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-500 uppercase mb-2">Position du texte</label>
+                        <select id="textPos" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl">
+                            <option value="dessous">Dessous le code</option>
+                            <option value="dessus">Dessus le code</option>
+                        </select>
+                    </div>
+                </div>
+
+                <button type="submit" id="btnSubmit" class="w-full bg-[#002e5d] text-white font-black py-4 rounded-2xl shadow-xl hover:bg-blue-900 transition-all flex justify-center items-center gap-3">
+                    <span id="btnText">GÉNÉRER SUR GOOGLE DRIVE</span>
+                    <div id="loader" class="hidden animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                </button>
+            </form>
+
+            <div id="result" class="hidden p-4 rounded-2xl bg-blue-50 border border-blue-100 text-center animate-bounce">
+                <p class="text-blue-900 font-bold italic">PDF créé dans le dossier 'Etiquettes_Pelichet'</p>
+                <a href="https://drive.google.com/" target="_blank" class="text-xs text-blue-600 underline font-bold uppercase mt-1 block">Accéder à Drive</a>
+            </div>
+        </div>
     </div>
 
-    <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-1">Afficher le texte ?</label>
-        <select id="showText" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white">
-            <option value="true">Oui</option>
-            <option value="false">Non</option>
-        </select>
-    </div>
-
-    <div>
-        <label class="block text-sm font-semibold text-slate-700 mb-1">Position du texte</label>
-        <select id="textPos" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white">
-            <option value="dessous">Dessous le code</option>
-            <option value="dessus">Dessus le code</option>
-        </select>
-    </div>
-</div>
+    <script src="script.js"></script>
+</body>
+</html>
