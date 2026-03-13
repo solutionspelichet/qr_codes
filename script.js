@@ -46,14 +46,14 @@ labelForm.addEventListener('submit', async (e) => {
             }
 
             const payload = {
-                rows: codes,
-                options: {
-                    type: document.getElementById('type').value,
-                    cols: parseInt(document.getElementById('cols').value),
-                    width_mm: 50,
-                    height_mm: 30,
-                    margin_top: 10
-                }
+    rows: codes,
+    options: {
+        type: document.getElementById('type').value,
+        preset: document.getElementById('preset').value,
+        showText: document.getElementById('showText').value === "true",
+        textPos: document.getElementById('textPos').value
+    }
+
             };
 
             // Envoi à Google Apps Script
