@@ -25,11 +25,16 @@
                 </div>
 
                 <div id="customFields" class="col-span-2 hidden grid grid-cols-4 gap-2 p-3 bg-blue-50 rounded-xl">
-                    <input type="number" id="custW" placeholder="L mm" class="p-2 text-xs border rounded">
-                    <input type="number" id="custH" placeholder="H mm" class="p-2 text-xs border rounded">
-                    <input type="number" id="custCols" placeholder="Col" class="p-2 text-xs border rounded">
-                    <input type="number" id="custRows" placeholder="Lig" class="p-2 text-xs border rounded">
-                </div>
+    <div><label class="text-[9px] font-bold">L mm</label><input type="number" step="0.1" id="custW" class="w-full p-2 text-xs border rounded"></div>
+    <div><label class="text-[9px] font-bold">H mm</label><input type="number" step="0.1" id="custH" class="w-full p-2 text-xs border rounded"></div>
+    <div><label class="text-[9px] font-bold">Col</label><input type="number" id="custCols" class="w-full p-2 text-xs border rounded"></div>
+    <div><label class="text-[9px] font-bold">Lig</label><input type="number" id="custRows" class="w-full p-2 text-xs border rounded"></div>
+    
+    <div><label class="text-[9px] font-bold">Marge Haut mm</label><input type="number" step="0.1" id="custMarginT" value="0" class="w-full p-2 text-xs border rounded"></div>
+    <div><label class="text-[9px] font-bold">Marge Bas mm</label><input type="number" step="0.1" id="custMarginB" value="0" class="w-full p-2 text-xs border rounded"></div>
+    <div><label class="text-[9px] font-bold">Marge Gauche mm</label><input type="number" step="0.1" id="custMarginL" value="0" class="w-full p-2 text-xs border rounded"></div>
+    <div><label class="text-[9px] font-bold">Marge Droite mm</label><input type="number" step="0.1" id="custMarginR" value="0" class="w-full p-2 text-xs border rounded"></div>
+</div>
 
                 <div>
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Type Code</label>
@@ -74,3 +79,4 @@
     <script>function toggleCustom(){document.getElementById('customFields').classList.toggle('hidden', document.getElementById('preset').value !== "CUSTOM");}</script>
 </body>
 </html>
+
