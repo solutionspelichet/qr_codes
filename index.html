@@ -1,0 +1,215 @@
+
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Label Generator</title>
+
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/qrious@4.0.2/dist/qrious.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.6/dist/JsBarcode.all.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
+
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body class="min-h-screen">
+  <div class="max-w-7xl mx-auto px-4 py-8">
+    <div class="card p-6 mb-6">
+      <h1 class="text-3xl font-bold mb-2">Label Generator</h1>
+      <p class="text-slate-600">GitHub Pages + generation navigateur + Google Drive</p>
+    </div>
+
+    <div class="grid lg:grid-cols-3 gap-6">
+      <div class="lg:col-span-2 space-y-6">
+
+        <div class="card p-6">
+          <h2 class="text-xl font-semibold mb-4">1. Google Drive</h2>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">ID dossier Drive (optionnel)</label>
+              <input id="drive-folder-id" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="Ex: 1AbCdEf..." />
+            </div>
+            <div class="flex flex-col justify-end gap-3">
+              <button id="connect-drive-btn" class="px-4 py-2 rounded-xl bg-slate-900 text-white">Connexion Google Drive</button>
+              <label class="flex items-center gap-2 text-sm">
+                <input id="share-publicly" type="checkbox" />
+                <span>Rendre partageable publiquement</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="drive-status" class="mt-4 text-sm text-slate-600">Non connecte.</div>
+        </div>
+
+        <div class="card p-6">
+          <h2 class="text-xl font-semibold mb-4">2. Excel</h2>
+
+          <div class="flex flex-wrap gap-3 mb-4">
+            <button id="download-template-btn" class="px-4 py-2 rounded-xl bg-slate-100">Telecharger un modele Excel</button>
+          </div>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Fichier .xlsx</label>
+              <input id="excel-file" type="file" accept=".xlsx" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-2">Colonne</label>
+              <select id="column-name" class="w-full rounded-lg border border-slate-300 px-3 py-2">
+                <option value="Code">Code</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="mt-4">
+            <label class="block text-sm font-medium mb-2">Valeur de preview</label>
+            <input id="preview-code" type="text" class="w-full rounded-lg border border-slate-300 px-3 py-2" placeholder="ABC123" />
+          </div>
+
+          <div id="excel-summary" class="mt-4 text-sm text-slate-600">Aucun fichier charge.</div>
+        </div>
+
+        <div class="card p-6">
+          <h2 class="text-xl font-semibold mb-4">3. Options</h2>
+
+          <div class="grid md:grid-cols-2 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Preset</label>
+              <select id="preset-select" class="w-full rounded-lg border border-slate-300 px-3 py-2"></select>
+            </div>
+
+            <div>
+              <label class="block text-sm font-medium mb-2">DPI</label>
+              <input id="dpi" type="number" value="200" min="96" max="300" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+          </div>
+
+          <div class="mt-6 grid md:grid-cols-2 gap-6">
+            <div>
+              <p class="text-sm font-medium mb-2">Types de code</p>
+              <div class="space-y-2">
+                <label class="flex items-center gap-2"><input type="checkbox" data-role="code-type" value="QR" checked /> QR</label>
+                <label class="flex items-center gap-2"><input type="checkbox" data-role="code-type" value="Code128" checked /> Code128</label>
+                <label class="flex items-center gap-2"><input type="checkbox" data-role="code-type" value="Code39" /> Code39</label>
+              </div>
+            </div>
+
+            <div>
+              <p class="text-sm font-medium mb-2">Formats</p>
+              <div class="space-y-2">
+                <label class="flex items-center gap-2"><input type="checkbox" data-role="format" value="PNG" checked /> PNG</label>
+                <label class="flex items-center gap-2"><input type="checkbox" data-role="format" value="PDF" checked /> PDF</label>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 grid md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Couleur code</label>
+              <input id="code-color" type="color" value="#000000" class="w-full h-11 rounded-lg border border-slate-300" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Couleur texte</label>
+              <input id="text-color" type="color" value="#000000" class="w-full h-11 rounded-lg border border-slate-300" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Fond</label>
+              <input id="background-color" type="color" value="#ffffff" class="w-full h-11 rounded-lg border border-slate-300" />
+            </div>
+          </div>
+
+          <div class="mt-6 grid md:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Largeur (mm)</label>
+              <input id="label-width-mm" type="number" value="50" min="10" max="300" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Hauteur (mm)</label>
+              <input id="label-height-mm" type="number" value="30" min="10" max="300" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Espacement X</label>
+              <input id="spacing-x-mm" type="number" value="2" min="0" max="50" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Espacement Y</label>
+              <input id="spacing-y-mm" type="number" value="2" min="0" max="50" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+          </div>
+
+          <div class="mt-4 grid md:grid-cols-4 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Marge haut</label>
+              <input id="margin-top-mm" type="number" value="10" min="0" max="50" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Marge gauche</label>
+              <input id="margin-left-mm" type="number" value="10" min="0" max="50" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Colonnes/page</label>
+              <input id="columns-per-page" type="number" value="3" min="1" max="10" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Lignes/page</label>
+              <input id="rows-per-page" type="number" value="8" min="1" max="30" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+          </div>
+
+          <div class="mt-4 grid md:grid-cols-3 gap-4">
+            <div>
+              <label class="block text-sm font-medium mb-2">Hauteur barcode</label>
+              <input id="barcode-height" type="number" value="40" min="10" max="120" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Taille police</label>
+              <input id="font-size" type="number" value="18" min="10" max="48" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+            <div>
+              <label class="block text-sm font-medium mb-2">Marge texte (mm)</label>
+              <input id="text-margin-mm" type="number" value="2" min="0" max="20" class="w-full rounded-lg border border-slate-300 px-3 py-2" />
+            </div>
+          </div>
+
+          <div class="mt-6 flex flex-wrap gap-3">
+            <button id="generate-btn" class="px-6 py-3 rounded-xl bg-blue-600 text-white font-semibold">Generer</button>
+            <button id="upload-drive-btn" class="px-6 py-3 rounded-xl bg-emerald-600 text-white font-semibold hidden">Envoyer sur Google Drive</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="space-y-6">
+        <div class="card p-6">
+          <h2 class="text-xl font-semibold mb-4">Preview</h2>
+          <div id="preview-label" class="preview-box">
+            <div class="text-sm text-slate-500">Aucune preview</div>
+          </div>
+        </div>
+
+        <div id="status-box" class="hidden rounded-xl p-4 text-sm"></div>
+
+        <div id="results-box" class="hidden card p-6">
+          <h2 class="text-lg font-semibold mb-3">Resultats</h2>
+          <div class="mb-3">
+            <a id="main-download-link" href="#" download class="inline-block px-4 py-2 rounded-xl bg-slate-900 text-white">Telecharger le resultat principal</a>
+          </div>
+          <div id="files-list" class="file-list text-sm"></div>
+          <div id="drive-link-box" class="hidden mt-4 text-sm">
+            <div class="font-medium mb-1">Lien Drive</div>
+            <a id="drive-link" href="#" target="_blank" class="text-blue-600 underline"></a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="./config.js"></script>
+  <script src="./app.js"></script>
+</body>
+</html>

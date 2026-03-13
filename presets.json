@@ -1,0 +1,31 @@
+
+[
+  {
+    "id": "custom",
+    "name": "Personnalise"
+  },
+  {
+    "id": "avery_2x7",
+    "name": "Avery 2x7",
+    "label_width_mm": 99.1,
+    "label_height_mm": 38.1,
+    "spacing_x_mm": 2.5,
+    "spacing_y_mm": 0,
+    "margin_top_mm": 12.7,
+    "margin_left_mm": 4.0,
+    "columns_per_page": 2,
+    "rows_per_page": 7
+  },
+  {
+    "id": "avery_3x8",
+    "name": "Avery 3x8",
+    "label_width_mm": 63.5,
+    "label_height_mm": 33.9,
+    "spacing_x_mm": 2.5,
+    "spacing_y_mm": 0,
+    "margin_top_mm": 12.7,
+    "margin_left_mm": 7.0,
+    "columns_per_page": 3,
+    "rows_per_page": 8
+  }
+]
