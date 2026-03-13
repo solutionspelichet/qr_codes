@@ -1,4 +1,4 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxDyfl3NhpEbFEL7zCdQgRCQrIutFqRwSnd1gGUOosaWIiIx5PdNQJbZPuSu_7mneUq/exec";
+const GAS_URL = "VOTRE_URL_SCRIPT_ICI"; // Remplacez par votre lien d'application web
 
 document.getElementById('labelForm').onsubmit = async (e) => {
     e.preventDefault();
@@ -36,7 +36,7 @@ document.getElementById('labelForm').onsubmit = async (e) => {
             btn.innerText = "GÉNÉRER LE PDF"; btn.disabled = false;
             document.getElementById('result').classList.remove('hidden');
         } catch (err) {
-            alert("Erreur technique : " + err.message);
+            alert("Erreur réseau : " + err.message);
             btn.disabled = false;
         }
     };
