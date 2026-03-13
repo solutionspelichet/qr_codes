@@ -1,47 +1,26 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pelichet | Générateur d'Étiquettes Cloud</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-</head>
-<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
-
-    <div class="max-w-2xl w-full bg-white shadow-2xl rounded-2xl overflow-hidden">
-        <div class="bg-[#002e5d] p-6 text-white text-center">
-            <h1 class="text-2xl font-bold uppercase tracking-wider">Générateur d'Étiquettes</h1>
-            <p class="text-blue-200 text-sm mt-1">Interface Web & Google Drive</p>
-        </div>
-
-        <div class="p-8">
-            <form id="labelForm" class="space-y-6">
-                <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-blue-500 transition-colors bg-slate-50">
-                    <input type="file" id="excelFile" accept=".xlsx" class="hidden" required>
-                    <label for="excelFile" class="cursor-pointer group">
-                        <svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-blue-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-                        </svg>
-                        <span id="fileStatus" class="text-slate-600 font-medium">Sélectionnez le fichier Excel (.xlsx)</span>
-                    </label>
-                </div>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+<div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+    
     <div class="md:col-span-2">
-        <label class="block text-sm font-semibold text-slate-700 mb-1">Format d'étiquette (Modèle)</label>
-        <select id="preset" class="w-full p-2.5 border border-slate-300 rounded-lg">
-            <option value="AVERY_L7159">Avery L7159 (3x8 - 63.5x33.9mm)</option>
-            <option value="AVERY_L7160">Avery L7160 (3x7 - 63.5x38.1mm)</option>
-            <option value="AVERY_L7163">Avery L7163 (2x7 - 99.1x38.1mm)</option>
-            <option value="AGIPA_119011">Agipa 119011 (2x8 - 105x37mm)</option>
-            <option value="SINGLE_ROLL">Imprimante Thermique (50x30mm)</option>
+        <label class="block text-sm font-semibold text-slate-700 mb-1">Format d'étiquette</label>
+        <select id="preset" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white">
+            <optgroup label="Avery">
+                <option value="AVERY_L7159">Avery L7159 (3x8 - 63.5x33.9mm)</option>
+                <option value="AVERY_L7160">Avery L7160 (3x7 - 63.5x38.1mm)</option>
+            </optgroup>
+            <optgroup label="Herma">
+                <option value="HERMA_4676">Herma 4676 (3x8 - 70x29.7mm)</option>
+                <option value="HERMA_4457">Herma 4457 (4x10 - 48.3x25.4mm)</option>
+                <option value="HERMA_4270">Herma 4270 (2x4 - 99.1x67.7mm)</option>
+            </optgroup>
+            <optgroup label="Autre">
+                <option value="SINGLE_ROLL">Imprimante Thermique (50x30mm)</option>
+            </optgroup>
         </select>
     </div>
 
     <div>
         <label class="block text-sm font-semibold text-slate-700 mb-1">Afficher le texte ?</label>
-        <select id="showText" class="w-full p-2.5 border border-slate-300 rounded-lg">
+        <select id="showText" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white">
             <option value="true">Oui</option>
             <option value="false">Non</option>
         </select>
@@ -49,27 +28,9 @@
 
     <div>
         <label class="block text-sm font-semibold text-slate-700 mb-1">Position du texte</label>
-        <select id="textPos" class="w-full p-2.5 border border-slate-300 rounded-lg">
+        <select id="textPos" class="w-full p-2.5 border border-slate-300 rounded-lg bg-white">
             <option value="dessous">Dessous le code</option>
             <option value="dessus">Dessus le code</option>
         </select>
     </div>
 </div>
-
-                <button type="submit" id="btnSubmit" class="w-full bg-[#002e5d] hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex justify-center items-center">
-                    <span id="btnText">GÉNÉRER ET ENREGISTRER SUR DRIVE</span>
-                    <div id="loader" class="hidden ml-3 animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
-                </button>
-            </form>
-
-            <div id="result" class="mt-6 hidden p-4 rounded-lg bg-green-50 border border-green-200 text-center">
-                <p class="text-green-800 font-medium">Succès ! Votre PDF est prêt.</p>
-                <a id="downloadLink" href="#" target="_blank" class="text-blue-600 underline font-bold mt-2 inline-block">Ouvrir dans Google Drive</a>
-            </div>
-        </div>
-    </div>
-
-    <script src="script.js"></script>
-</body>
-</html>
-
