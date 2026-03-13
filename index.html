@@ -2,83 +2,59 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pelichet | Logistics</title>
+    <title>Pelichet | Générateur</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
-<body class="bg-slate-100 min-h-screen p-4 flex items-center justify-center">
-
-    <div class="max-w-2xl w-full bg-white shadow-2xl rounded-3xl overflow-hidden">
-        <div class="bg-[#002e5d] p-8 text-white text-center">
-            <h1 class="text-3xl font-black italic">PELICHET</h1>
-            <p class="text-blue-200 text-xs tracking-widest uppercase">Label Generator v3.0</p>
-        </div>
-
-        <div class="p-8 space-y-6">
-            <form id="labelForm" class="space-y-4">
-                <input type="file" id="excelFile" accept=".xlsx" class="hidden" required>
-                <label for="excelFile" class="flex flex-col items-center border-2 border-dashed p-6 rounded-2xl cursor-pointer bg-slate-50 hover:bg-white transition-all">
-                    <span id="fileStatus" class="text-slate-500 font-bold italic text-sm">Charger le fichier Excel (.xlsx)</span>
-                </label>
-
-                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div class="md:col-span-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Format d'Étiquette</label>
-                        <select id="preset" class="w-full p-3 bg-slate-50 border rounded-xl outline-none">
-                            <optgroup label="Avery">
-                                <option value="AVERY_L7159">L7159 (3x8)</option>
-                                <option value="AVERY_L7160">L7160 (3x7)</option>
-                                <option value="AVERY_L7163">L7163 (2x7)</option>
-                            </optgroup>
-                            <optgroup label="Herma">
-                                <option value="HERMA_4676">4676 (3x8)</option>
-                                <option value="HERMA_4457">4457 (4x10)</option>
-                                <option value="HERMA_4270">4270 (2x4)</option>
-                                <option value="HERMA_4428">4428 (2x6)</option>
-                            </optgroup>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Type Code</label>
-                        <select id="type" class="w-full p-3 bg-slate-50 border rounded-xl">
-                            <option value="Code128">Barcode 128</option>
-                            <option value="QR">QR Code</option>
-                        </select>
-                    </div>
-
-                    <div>
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Afficher Texte</label>
-                        <select id="showText" class="w-full p-3 bg-slate-50 border rounded-xl">
-                            <option value="true">Oui</option>
-                            <option value="false">Non</option>
-                        </select>
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase">Position Texte</label>
-                        <select id="textPos" class="w-full p-3 bg-slate-50 border rounded-xl">
-                            <option value="dessous">Dessous le code</option>
-                            <option value="dessus">Dessus le code</option>
-                        </select>
-                    </div>
-
-                    <div class="md:col-span-2">
-                        <label class="text-[10px] font-bold text-slate-400 uppercase font-black text-blue-600">Email de réception (Optionnel)</label>
-                        <input type="email" id="userEmail" placeholder="votre@email.com" class="w-full p-3 bg-blue-50 border border-blue-200 rounded-xl outline-none">
-                    </div>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
+    <div class="max-w-xl w-full bg-white shadow-2xl rounded-3xl overflow-hidden">
+        <div class="bg-[#002e5d] p-6 text-white text-center font-bold text-2xl italic">PELICHET</div>
+        <form id="labelForm" class="p-8 space-y-4">
+            <input type="file" id="excelFile" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+            
+            <div class="grid grid-cols-2 gap-4">
+                <div class="col-span-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase">Format étiquette</label>
+                    <select id="preset" class="w-full p-2 border rounded-lg">
+                        <option value="AVERY_L7159">Avery L7159 (3x8)</option>
+                        <option value="AVERY_L7160">Avery L7160 (3x7)</option>
+                        <option value="HERMA_4270">Herma 4270 (2x4)</option>
+                    </select>
                 </div>
-
-                <button type="submit" id="btnSubmit" class="w-full bg-[#002e5d] text-white font-bold py-4 rounded-2xl shadow-lg hover:scale-[1.02] transition-transform flex justify-center items-center gap-2">
-                    <span id="btnText">GÉNÉRER PDF</span>
-                    <div id="loader" class="hidden animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
-                </button>
-            </form>
-
-            <div id="result" class="hidden p-4 rounded-2xl bg-green-50 border border-green-200 text-center">
-                <a id="driveLink" href="#" target="_blank" class="text-green-700 font-bold underline">Cliquer ici pour Télécharger le PDF</a>
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase">Type</label>
+                    <select id="type" class="w-full p-2 border rounded-lg">
+                        <option value="Code128">Code-barres</option>
+                        <option value="QR">QR Code</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-400 uppercase">Texte</label>
+                    <select id="showText" class="w-full p-2 border rounded-lg">
+                        <option value="true">Oui</option>
+                        <option value="false">Non</option>
+                    </select>
+                </div>
+                <div class="col-span-2">
+                    <label class="text-xs font-bold text-slate-400 uppercase">Position texte</label>
+                    <select id="textPos" class="w-full p-2 border rounded-lg">
+                        <option value="dessous">Dessous</option>
+                        <option value="dessus">Dessus</option>
+                    </select>
+                </div>
+                <div class="col-span-2">
+                    <label class="text-xs font-bold text-blue-600 uppercase">Email de réception</label>
+                    <input type="email" id="userEmail" class="w-full p-2 border border-blue-200 rounded-lg" placeholder="exemple@pelichet.ch">
+                </div>
             </div>
+
+            <button type="submit" id="btnSubmit" class="w-full bg-[#002e5d] text-white font-bold py-3 rounded-xl hover:bg-blue-900 transition">
+                <span id="btnText">GÉNÉRER PDF</span>
+            </button>
+        </form>
+        <div id="result" class="hidden p-6 bg-green-50 text-center border-t">
+            <p class="text-green-700 font-bold">PDF envoyé !</p>
+            <a id="driveLink" href="#" target="_blank" class="text-blue-600 underline text-sm">Voir sur Drive</a>
         </div>
     </div>
     <script src="script.js"></script>
