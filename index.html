@@ -2,31 +2,37 @@
 <html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Pelichet | Logistics Labels</title>
+    <title>Pelichet | Expert Labels</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 </head>
-<body class="bg-slate-50 min-h-screen p-4 flex items-center justify-center">
+<body class="bg-slate-50 min-h-screen p-4 flex items-center justify-center font-sans">
     <div class="max-w-xl w-full bg-white shadow-2xl rounded-3xl overflow-hidden border border-slate-200">
         <div class="bg-[#002e5d] p-8 text-white text-center font-black italic text-3xl uppercase tracking-tighter">PELICHET</div>
         <form id="labelForm" class="p-8 space-y-5">
-            <input type="file" id="excelFile" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer shadow-sm">
+            <div class="space-y-1">
+                <label class="text-[10px] font-bold text-slate-400 uppercase">Fichier Excel (.xlsx)</label>
+                <input type="file" id="excelFile" accept=".xlsx" class="block w-full text-sm text-slate-500 file:mr-4 file:py-2 file:px-4 file:rounded-xl file:border-0 file:bg-blue-50 file:text-blue-700 cursor-pointer shadow-sm">
+            </div>
             
             <div class="grid grid-cols-2 gap-4">
                 <div class="col-span-2">
                     <label class="text-[10px] font-bold text-slate-400 uppercase">Modèle d'Étiquette</label>
-                    <select id="preset" class="w-full p-3 bg-slate-50 border rounded-xl outline-none" onchange="toggleCustom()">
-    <optgroup label="HERMA">
-        <option value="HERMA_4427">HERMA 4427 (2x16 - 105x18.5mm)</option>
-        <option value="HERMA_4270">HERMA 4270 (2x4 - 99x67mm)</option>
-        <option value="HERMA_4676">HERMA 4676 (3x8 - 70x29mm)</option>
-    </optgroup>
-    <optgroup label="AVERY">
-        <option value="AVERY_L7159">AVERY L7159 (3x8)</option>
-        <option value="AVERY_L7160">AVERY L7160 (3x7)</option>
-    </optgroup>
-    <option value="CUSTOM">-- SUR MESURE --</option>
-</select>
+                    <select id="preset" class="w-full p-3 bg-slate-50 border rounded-xl outline-none font-bold" onchange="toggleCustom()">
+                        <optgroup label="HERMA">
+                            <option value="HERMA_4427">HERMA 4427 (2x16 - 105x18.5mm)</option>
+                            <option value="HERMA_4270">HERMA 4270 (2x4 - 99.1x67.7mm)</option>
+                            <option value="HERMA_4676">HERMA 4676 (3x8 - 70x29.7mm)</option>
+                            <option value="HERMA_4457">HERMA 4457 (4x10 - 48.3x25.4mm)</option>
+                            <option value="HERMA_4428">HERMA 4428 (2x6 - 105x48mm)</option>
+                        </optgroup>
+                        <optgroup label="AVERY">
+                            <option value="AVERY_L7159">AVERY L7159 (3x8 - 63.5x33.9mm)</option>
+                            <option value="AVERY_L7160">AVERY L7160 (3x7 - 63.5x38.1mm)</option>
+                            <option value="AVERY_L7163">AVERY L7163 (2x7 - 99.1x38.1mm)</option>
+                        </optgroup>
+                        <option value="CUSTOM">-- SUR MESURE --</option>
+                    </select>
                 </div>
 
                 <div id="customFields" class="col-span-2 hidden grid grid-cols-4 gap-2 p-3 bg-blue-50 rounded-xl">
@@ -48,7 +54,7 @@
                     <select id="textPos" class="w-full p-3 bg-slate-50 border rounded-xl">
                         <option value="dessous">Dessous</option>
                         <option value="dessus">Dessus</option>
-                        <option value="none">Aucun</option>
+                        <option value="none">Masqué</option>
                     </select>
                 </div>
                 <div class="col-span-2">
@@ -57,12 +63,17 @@
                 </div>
             </div>
 
-            <button type="submit" class="w-full bg-[#002e5d] text-white font-bold py-4 rounded-xl hover:bg-blue-900 shadow-lg">GÉNÉRER LE PDF</button>
+            <button type="submit" id="btnSubmit" class="w-full bg-[#002e5d] text-white font-bold py-4 rounded-xl hover:bg-blue-900 shadow-lg transition-transform active:scale-95">GÉNÉRER LE PDF</button>
         </form>
-        <div id="result" class="hidden p-6 bg-green-50 text-center font-bold text-green-800 border-t">REQUÊTE ENVOYÉE ! VÉRIFIEZ DRIVE & EMAIL.</div>
+
+        <div id="errorZone" class="hidden p-6 bg-red-50 text-center font-bold text-red-800 border-t border-red-200 text-sm"></div>
+        <div id="result" class="hidden p-6 bg-green-50 text-center border-t border-green-200">
+            <p class="font-bold text-green-800 mb-2">SUCCÈS !</p>
+            <a id="driveLink" href="#" target="_blank" class="text-blue-600 underline font-bold text-sm bg-white px-4 py-2 rounded shadow">Ouvrir le PDF</a>
+            <p id="emailStatus" class="text-xs text-slate-500 mt-3"></p>
+        </div>
     </div>
     <script src="script.js"></script>
     <script>function toggleCustom(){document.getElementById('customFields').classList.toggle('hidden', document.getElementById('preset').value !== "CUSTOM");}</script>
 </body>
 </html>
-
