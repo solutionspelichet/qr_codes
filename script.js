@@ -35,6 +35,10 @@ document.getElementById('labelForm').onsubmit = async (e) => {
                     custW: document.getElementById('custW').value,
                     custH: document.getElementById('custH').value,
                     custCols: document.getElementById('custCols').value,
+                    custMarginT: document.getElementById('custMarginT').value,
+custMarginB: document.getElementById('custMarginB').value,
+custMarginL: document.getElementById('custMarginL').value,
+custMarginR: document.getElementById('custMarginR').value,
                     custRows: document.getElementById('custRows').value
                 }
             };
