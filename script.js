@@ -1,0 +1,88 @@
+const GAS_URL = "https://script.google.com/macros/s/AKfycbxDyfl3NhpEbFEL7zCdQgRCQrIutFqRwSnd1gGUOosaWIiIx5PdNQJbZPuSu_7mneUq/exec";
+
+const fileInput = document.getElementById('excelFile');
+const fileStatus = document.getElementById('fileStatus');
+const labelForm = document.getElementById('labelForm');
+const btnSubmit = document.getElementById('btnSubmit');
+const loader = document.getElementById('loader');
+const btnText = document.getElementById('btnText');
+const resultDiv = document.getElementById('result');
+const downloadLink = document.getElementById('downloadLink');
+
+// Affichage du nom du fichier sélectionné
+fileInput.addEventListener('change', (e) => {
+    if (e.target.files.length > 0) {
+        fileStatus.innerText = `Fichier prêt : ${e.target.files[0].name}`;
+        fileStatus.classList.add('text-blue-600');
+    }
+});
+
+labelForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    // UI State
+    btnSubmit.disabled = true;
+    loader.classList.remove('hidden');
+    btnText.innerText = "Génération en cours...";
+    resultDiv.classList.add('hidden');
+
+    const file = fileInput.files[0];
+    const reader = new FileReader();
+
+    reader.onload = async (event) => {
+        try {
+            const data = new Uint8Array(event.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
+            const json = XLSX.utils.sheet_to_json(firstSheet);
+
+            // Extraction des données (Colonne "Code")
+            const codes = json.map(row => row.Code || row.code).filter(c => c);
+
+            if (codes.length === 0) {
+                alert("Aucune donnée trouvée dans la colonne 'Code'.");
+                resetUI();
+                return;
+            }
+
+            const payload = {
+                rows: codes,
+                options: {
+                    type: document.getElementById('type').value,
+                    cols: parseInt(document.getElementById('cols').value),
+                    width_mm: 50,
+                    height_mm: 30,
+                    margin_top: 10
+                }
+            };
+
+            // Envoi à Google Apps Script
+            const response = await fetch(GAS_URL, {
+                method: 'POST',
+                mode: 'no-cors', // Important pour GAS
+                body: JSON.stringify(payload)
+            });
+
+            // Note: Avec 'no-cors', on ne peut pas lire la réponse JSON. 
+            // On informe l'utilisateur que c'est envoyé sur Drive.
+            btnText.innerText = "Terminé !";
+            loader.classList.add('hidden');
+            resultDiv.classList.remove('hidden');
+            downloadLink.innerText = "Vérifiez votre dossier 'Etiquettes_Pelichet' sur Drive";
+            downloadLink.href = "https://drive.google.com/";
+
+        } catch (err) {
+            console.error(err);
+            alert("Erreur lors de la lecture du fichier.");
+            resetUI();
+        }
+    };
+
+    reader.readAsArrayBuffer(file);
+});
+
+function resetUI() {
+    btnSubmit.disabled = false;
+    loader.classList.add('hidden');
+    btnText.innerText = "GÉNÉRER ET ENREGISTRER SUR DRIVE";
+}
