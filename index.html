@@ -1,88 +1,59 @@
-const GAS_URL = "https://script.google.com/macros/s/AKfycbxDyfl3NhpEbFEL7zCdQgRCQrIutFqRwSnd1gGUOosaWIiIx5PdNQJbZPuSu_7mneUq/exec";
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pelichet | Générateur d'Étiquettes Cloud</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<body class="bg-slate-100 min-h-screen flex items-center justify-center p-4">
 
-const fileInput = document.getElementById('excelFile');
-const fileStatus = document.getElementById('fileStatus');
-const labelForm = document.getElementById('labelForm');
-const btnSubmit = document.getElementById('btnSubmit');
-const loader = document.getElementById('loader');
-const btnText = document.getElementById('btnText');
-const resultDiv = document.getElementById('result');
-const downloadLink = document.getElementById('downloadLink');
+    <div class="max-w-2xl w-full bg-white shadow-2xl rounded-2xl overflow-hidden">
+        <div class="bg-[#002e5d] p-6 text-white text-center">
+            <h1 class="text-2xl font-bold uppercase tracking-wider">Générateur d'Étiquettes</h1>
+            <p class="text-blue-200 text-sm mt-1">Interface Web & Google Drive</p>
+        </div>
 
-// Affichage du nom du fichier sélectionné
-fileInput.addEventListener('change', (e) => {
-    if (e.target.files.length > 0) {
-        fileStatus.innerText = `Fichier prêt : ${e.target.files[0].name}`;
-        fileStatus.classList.add('text-blue-600');
-    }
-});
+        <div class="p-8">
+            <form id="labelForm" class="space-y-6">
+                <div class="border-2 border-dashed border-slate-300 rounded-xl p-8 text-center hover:border-blue-500 transition-colors bg-slate-50">
+                    <input type="file" id="excelFile" accept=".xlsx" class="hidden" required>
+                    <label for="excelFile" class="cursor-pointer group">
+                        <svg class="mx-auto h-12 w-12 text-slate-400 group-hover:text-blue-500 mb-2" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 13h6m-3-3v6m5 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                        </svg>
+                        <span id="fileStatus" class="text-slate-600 font-medium">Sélectionnez le fichier Excel (.xlsx)</span>
+                    </label>
+                </div>
 
-labelForm.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    
-    // UI State
-    btnSubmit.disabled = true;
-    loader.classList.remove('hidden');
-    btnText.innerText = "Génération en cours...";
-    resultDiv.classList.add('hidden');
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Type de Code</label>
+                        <select id="type" class="w-full p-2.5 bg-white border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none">
+                            <option value="QR">QR Code</option>
+                            <option value="Code128">Code 128 (Barcode)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-1">Colonnes par page</label>
+                        <input type="number" id="cols" value="3" min="1" max="5" class="w-full p-2.5 border border-slate-300 rounded-lg">
+                    </div>
+                </div>
 
-    const file = fileInput.files[0];
-    const reader = new FileReader();
+                <button type="submit" id="btnSubmit" class="w-full bg-[#002e5d] hover:bg-blue-800 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex justify-center items-center">
+                    <span id="btnText">GÉNÉRER ET ENREGISTRER SUR DRIVE</span>
+                    <div id="loader" class="hidden ml-3 animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></div>
+                </button>
+            </form>
 
-    reader.onload = async (event) => {
-        try {
-            const data = new Uint8Array(event.target.result);
-            const workbook = XLSX.read(data, { type: 'array' });
-            const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-            const json = XLSX.utils.sheet_to_json(firstSheet);
+            <div id="result" class="mt-6 hidden p-4 rounded-lg bg-green-50 border border-green-200 text-center">
+                <p class="text-green-800 font-medium">Succès ! Votre PDF est prêt.</p>
+                <a id="downloadLink" href="#" target="_blank" class="text-blue-600 underline font-bold mt-2 inline-block">Ouvrir dans Google Drive</a>
+            </div>
+        </div>
+    </div>
 
-            // Extraction des données (Colonne "Code")
-            const codes = json.map(row => row.Code || row.code).filter(c => c);
-
-            if (codes.length === 0) {
-                alert("Aucune donnée trouvée dans la colonne 'Code'.");
-                resetUI();
-                return;
-            }
-
-            const payload = {
-                rows: codes,
-                options: {
-                    type: document.getElementById('type').value,
-                    cols: parseInt(document.getElementById('cols').value),
-                    width_mm: 50,
-                    height_mm: 30,
-                    margin_top: 10
-                }
-            };
-
-            // Envoi à Google Apps Script
-            const response = await fetch(GAS_URL, {
-                method: 'POST',
-                mode: 'no-cors', // Important pour GAS
-                body: JSON.stringify(payload)
-            });
-
-            // Note: Avec 'no-cors', on ne peut pas lire la réponse JSON. 
-            // On informe l'utilisateur que c'est envoyé sur Drive.
-            btnText.innerText = "Terminé !";
-            loader.classList.add('hidden');
-            resultDiv.classList.remove('hidden');
-            downloadLink.innerText = "Vérifiez votre dossier 'Etiquettes_Pelichet' sur Drive";
-            downloadLink.href = "https://drive.google.com/";
-
-        } catch (err) {
-            console.error(err);
-            alert("Erreur lors de la lecture du fichier.");
-            resetUI();
-        }
-    };
-
-    reader.readAsArrayBuffer(file);
-});
-
-function resetUI() {
-    btnSubmit.disabled = false;
-    loader.classList.add('hidden');
-    btnText.innerText = "GÉNÉRER ET ENREGISTRER SUR DRIVE";
-}
+    <script src="script.js"></script>
+</body>
+</html>
